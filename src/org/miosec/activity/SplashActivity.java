@@ -12,6 +12,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.miosec.mobilesafe.R;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -36,11 +37,11 @@ public class SplashActivity extends Activity {
 	private int serverCode;
 	private String desc;
 	private String update_url;
+	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler(){
 
 		@Override
 		public void handleMessage(Message msg) {
-			// TODO Auto-generated method stub
 			super.handleMessage(msg);
 			switch (msg.what) {
 			case GOTO_MAIN_UI:
@@ -48,20 +49,12 @@ public class SplashActivity extends Activity {
 				startActivity(intent);
 				break;
 			case SHOW_UPDATA_DIALOG:
-				AlertDialog.Builder builder = new Builder(SplashActivity.this);
-				builder.setTitle(serverCode);
-				builder.setMessage(desc);
-				builder.setPositiveButton("确定", new OnClickListener() {
-					
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						
-					}
-				});
+					showUpDialog();
 				break;
 			default:
 				break;
 			}
+	
 		}
 		
 	};
@@ -83,6 +76,47 @@ public class SplashActivity extends Activity {
 		}
 	}
 
+
+	protected void showUpDialog() {
+		AlertDialog.Builder builder = new Builder(this);
+		builder.setTitle("新版本:"+serverCode);
+		builder.setMessage(desc);
+		builder.setPositiveButton("确定", new OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				installAPK();
+			}
+		});
+		builder.setNegativeButton("取消", new OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				try {
+					gotoActivity(SplashActivity.this,"HomeActivity");
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		builder.show();
+	}
+
+
+	protected void gotoActivity(Activity activity,String otherActivity) throws ClassNotFoundException {
+		Intent intent = new Intent(activity,Class.forName(otherActivity));
+		startActivity(intent);
+	}
+
+
+	protected void installAPK() {
+		
+	}
+
+
+	public void downloadAPK() {
+		System.out.println("downloadAPK");
+			
+	}
 	private void checkUpdata() {
 
 		new Thread() {
@@ -123,6 +157,7 @@ public class SplashActivity extends Activity {
 						if(versionCode == serverCode){
 							message.what = GOTO_MAIN_UI;
 						}else{
+							message.obj = serverCode;
 							message.what = SHOW_UPDATA_DIALOG;
 						}
 					} else {
@@ -158,7 +193,6 @@ public class SplashActivity extends Activity {
 			Toast.makeText(context, msg,Toast.LENGTH_SHORT).show();
 		}else{
 			runOnUiThread(new Runnable() {
-				
 				@Override
 				public void run() {
 					Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
