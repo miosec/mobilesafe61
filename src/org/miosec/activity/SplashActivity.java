@@ -2,7 +2,6 @@ package org.miosec.activity;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
@@ -12,9 +11,6 @@ import java.net.URL;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.miosec.mobilesafe.R;
-import org.miosec.mobilesafe.R.id;
-import org.miosec.mobilesafe.R.layout;
-import org.miosec.mobilesafe.R.string;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -159,13 +155,13 @@ public class SplashActivity extends Activity {
 	}
 	public void showToast(final Context context,final String msg){
 		if("main".equals(Thread.currentThread().getName())){
-			Toast.makeText(context, msg, 0).show();
+			Toast.makeText(context, msg,Toast.LENGTH_SHORT).show();
 		}else{
 			runOnUiThread(new Runnable() {
 				
 				@Override
 				public void run() {
-					Toast.makeText(context, msg, 0).show();
+					Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
 				}
 			});
 		}
